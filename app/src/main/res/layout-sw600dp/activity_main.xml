@@ -35,6 +35,13 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.98"/>
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_pipe"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.7"/>
+
     <include layout="@layout/layout_acc_tank"
         android:id="@+id/acc_3"
         android:layout_width="0dp"
@@ -67,6 +74,106 @@
         app:layout_constraintBottom_toBottomOf="@id/guide_bottom"
         app:layout_constraintTop_toTopOf="@id/guide_top"
         />
+
+    <include layout="@layout/layout_boiler"
+        android:id="@+id/boiler"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="0.175"
+        app:layout_constraintDimensionRatio="1:1.85"
+        android:layout_margin="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/guide_bottom"
+        />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/boiler"
+        app:layout_constraintTop_toTopOf="@id/guide_top"
+        app:layout_constraintStart_toStartOf="@+id/boiler"
+        app:layout_constraintEnd_toEndOf="@+id/boiler"
+        app:layout_constraintWidth_percent="0.05"
+        android:background="@color/stone_grey"/>
+
+    <de.nitri.gauge.Gauge
+        android:id="@+id/smoke_gauge"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="0.1"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintTop_toTopOf="@+id/guide_top"
+        app:layout_constraintBottom_toTopOf="@+id/boiler"
+        app:layout_constraintStart_toStartOf="@+id/boiler"
+        app:layout_constraintEnd_toEndOf="@+id/boiler"
+        app:initialValue="150"
+        app:maxValue="600"
+        app:minValue="0"
+        app:totalNicks="80"
+        app:upperText="℃"
+        app:lowerText="150"
+        app:majorNickInterval="20"
+        app:scaleColor="@color/black"
+        app:valuePerNick="10"/>
+
+    <View
+        android:id="@+id/bottom_pipe"
+        android:layout_width="0dp"
+        android:layout_height="16dp"
+        app:layout_constraintStart_toEndOf="@+id/acc_1"
+        app:layout_constraintEnd_toStartOf="@+id/boiler"
+        app:layout_constraintBottom_toBottomOf="@id/guide_bottom"
+        android:layout_marginBottom="64dp"
+        android:background="@color/copper"/>
+
+    <View
+        android:id="@+id/top_pipe"
+        android:layout_width="0dp"
+        android:layout_height="16dp"
+        app:layout_constraintStart_toEndOf="@+id/acc_1"
+        app:layout_constraintEnd_toStartOf="@+id/guide_pipe"
+        app:layout_constraintTop_toTopOf="@id/guide_top"
+        android:layout_marginTop="64dp"
+        android:background="@color/copper"/>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="16dp"
+        app:layout_constraintStart_toEndOf="@+id/guide_pipe"
+        app:layout_constraintEnd_toStartOf="@+id/boiler"
+        app:layout_constraintTop_toTopOf="@id/boiler"
+        android:layout_marginTop="64dp"
+        android:background="@color/copper"/>
+
+    <View
+        android:layout_width="16dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="@+id/top_pipe"
+        app:layout_constraintBottom_toBottomOf="@id/bottom_pipe"
+        app:layout_constraintStart_toStartOf="@id/guide_pipe"
+        app:layout_constraintEnd_toEndOf="@id/guide_pipe"
+        android:background="@color/copper"/>
+
+    <ImageView
+        android:id="@+id/valve"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/valve2"
+        app:layout_constraintBottom_toBottomOf="@id/bottom_pipe"
+        app:layout_constraintStart_toStartOf="@id/guide_pipe"
+        app:layout_constraintEnd_toEndOf="@id/guide_pipe"
+        android:translationY="7dp"
+        android:backgroundTint="@color/transparent"/>
+
+    <ImageView
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/pump"
+        app:layout_constraintBottom_toTopOf="@+id/valve"
+        app:layout_constraintEnd_toEndOf="@id/guide_pipe"
+        android:translationY="12dp"
+        android:scaleX="1.4"
+        android:backgroundTint="@color/transparent"/>
 
 
 

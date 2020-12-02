@@ -22,7 +22,7 @@
         gauge:maxValue="120"
         gauge:minValue="0"
         gauge:totalNicks="90"
-        gauge:upperText="C"
+        gauge:upperText="℃"
         gauge:lowerText="22"
         gauge:scaleColor="@color/black"
         gauge:valuePerNick="2"/>
