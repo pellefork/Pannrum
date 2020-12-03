@@ -166,15 +166,70 @@
         android:backgroundTint="@color/transparent"/>
 
     <ImageView
+        android:id="@+id/pump"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:src="@drawable/pump"
         app:layout_constraintBottom_toTopOf="@+id/valve"
         app:layout_constraintEnd_toEndOf="@id/guide_pipe"
-        android:translationY="12dp"
         android:scaleX="1.4"
         android:backgroundTint="@color/transparent"/>
 
+    <de.nitri.gauge.Gauge
+        android:id="@+id/ladddomat_top_gauge"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="0.07"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintBottom_toTopOf="@+id/pump"
+        app:layout_constraintStart_toStartOf="@id/guide_pipe"
+        app:layout_constraintEnd_toEndOf="@id/guide_pipe"
+        app:initialValue="22"
+        app:maxValue="120"
+        app:minValue="0"
+        app:totalNicks="90"
+        app:upperText="℃"
+        app:lowerText="22"
+        app:scaleColor="@color/black"
+        app:valuePerNick="2"/>
+
+    <de.nitri.gauge.Gauge
+        android:id="@+id/ladddomat_left_gauge"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="0.07"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintTop_toTopOf="@+id/bottom_pipe"
+        app:layout_constraintBottom_toBottomOf="@+id/bottom_pipe"
+        app:layout_constraintStart_toEndOf="@+id/acc_1"
+        app:layout_constraintEnd_toEndOf="@id/guide_pipe"
+        app:initialValue="22"
+        app:maxValue="120"
+        app:minValue="0"
+        app:totalNicks="90"
+        app:upperText="℃"
+        app:lowerText="22"
+        app:scaleColor="@color/black"
+        app:valuePerNick="2"/>
+
+    <de.nitri.gauge.Gauge
+        android:id="@+id/ladddomat_right_gauge"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="0.07"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintTop_toTopOf="@+id/bottom_pipe"
+        app:layout_constraintBottom_toBottomOf="@+id/bottom_pipe"
+        app:layout_constraintStart_toEndOf="@+id/guide_pipe"
+        app:layout_constraintEnd_toStartOf="@+id/boiler"
+        app:initialValue="22"
+        app:maxValue="120"
+        app:minValue="0"
+        app:totalNicks="90"
+        app:upperText="℃"
+        app:lowerText="22"
+        app:scaleColor="@color/black"
+        app:valuePerNick="2"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
