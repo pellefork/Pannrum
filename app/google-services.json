@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "834289275143",
+    "firebase_url": "https://pannrum-7e210-default-rtdb.firebaseio.com",
+    "project_id": "pannrum-7e210",
+    "storage_bucket": "pannrum-7e210.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:834289275143:android:9d0c57134efd1aa6b0b5a2",
+        "android_client_info": {
+          "package_name": "se.fork.pannrum"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "834289275143-34liro234jb5qm24pfs91cst7q7amfu9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9SHfeKC6QzLehDalLTH0TBvZpo0JcJdw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "834289275143-34liro234jb5qm24pfs91cst7q7amfu9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

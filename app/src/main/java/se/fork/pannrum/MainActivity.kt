@@ -65,14 +65,17 @@ class MainActivity : AppCompatActivity() {
     fun listen() {
         Timber.d("listen")
         if (FirebaseHelper.isLoggedIn().not()) {
+            Timber.d("listen: Not logged in, logging in...")
             FirebaseHelper.login(this, "pnr2021", {user -> startListening(user)}, { error -> showAuthError(error)})
         } else {
+            Timber.d("listen: Logged in, starting listener")
             startListening(FirebaseHelper.currentUser)
         }
     }
 
     fun startListening(user: FirebaseUser?) {
-        Timber.d("startListening: $user")
+        writeTestRecord()
+        Timber.d("startListening: ${user?.email}")
         if (FirebaseHelper.isListeningForTemperatures().not()) {
             Timber.d("startListening: Starting to listen")
             FirebaseHelper.listenForTemperatures({rec -> updateUI(rec)}, {databaseError -> showDatabaseError(databaseError) })
@@ -88,9 +91,7 @@ class MainActivity : AppCompatActivity() {
 
     fun updateUI(tempRec: TempRecord?) {
         Timber.d("updateUI: $tempRec")
-        if (tempRec == null) {
-            writeTestRecord()
-        } else {
+        tempRec?.let {
             updateGauges(tempRec)
         }
     }
