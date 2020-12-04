@@ -3,8 +3,10 @@ package se.fork.pannrum
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.iid.FirebaseInstanceId
 import de.nitri.gauge.Gauge
 import kotlinx.android.synthetic.main.activity_main.*
 import se.fork.pannrum.model.TempRecord
@@ -28,6 +30,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         initUI()
+        handleDeviceToken()
     }
 
     override fun onPause() {
@@ -70,6 +73,35 @@ class MainActivity : AppCompatActivity() {
         } else {
             Timber.d("listen: Logged in, starting listener")
             startListening(FirebaseHelper.currentUser)
+        }
+    }
+
+    private fun handleDeviceToken() {
+        FirebaseInstanceId.getInstance().instanceId
+            .addOnCompleteListener(OnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Timber.e(task.exception,"handleDeviceToken: getInstanceId failed")
+                    return@OnCompleteListener
+                }
+                // Get new Instance ID token
+                val token = task.result?.token
+
+                // Log and toast
+                Timber.d("handleDeviceToken: Got token: $token")
+                token?.let {
+                    registerDeviceToken(token)
+                }
+            })
+    }
+
+    fun registerDeviceToken(token: String) {
+        Timber.d("registerDeviceToken")
+        if (FirebaseHelper.isLoggedIn().not()) {
+            Timber.d("registerDeviceToken: Not logged in, logging in...")
+            FirebaseHelper.login(this, "pnr2021", {user -> startListening(user)}, { error -> showAuthError(error)})
+        } else {
+            Timber.d("registerDeviceToken: Logged in, registering token $token")
+            FirebaseHelper.registerDeviceToken(token)
         }
     }
 

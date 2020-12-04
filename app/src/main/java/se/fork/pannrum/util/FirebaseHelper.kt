@@ -12,7 +12,8 @@ import timber.log.Timber
 
 object FirebaseHelper {
     val database = FirebaseDatabase.getInstance()
-    val dbRef = database.getReference("CurrentValues")
+    val tempDbRef = database.getReference("CurrentValues")
+    val deviceDbRef = database.getReference("DeviceTokens")
     var tempListener : ValueEventListener? = null
     var auth = FirebaseAuth.getInstance()
     val loggedInUser = "lillhagsbacken@gmail.com"
@@ -42,16 +43,20 @@ object FirebaseHelper {
 
     var currentUser = auth.currentUser
 
+    fun registerDeviceToken(token: String) {
+        deviceDbRef.child(token).setValue(true)
+    }
+
     fun isListeningForTemperatures() : Boolean {
         return tempListener != null
     }
 
     fun writeTempRecord(rec : TempRecord) {
-        dbRef.child("Temperatures").setValue(rec)
+        tempDbRef.child("Temperatures").setValue(rec)
     }
 
     fun listenForTemperatures(onSuccess:  (TempRecord?) -> Unit, onError: (DatabaseError) -> Unit ) {
-        val path = dbRef.child("Temperatures")
+        val path = tempDbRef.child("Temperatures")
         stopListeningForTemperatures()
         Timber.d("listenForTemperatures on $path")
         tempListener = path.addValueEventListener(object : ValueEventListener {
@@ -71,7 +76,7 @@ object FirebaseHelper {
 
     fun stopListeningForTemperatures() {
         tempListener?.let {
-            dbRef.removeEventListener(tempListener!!)
+            tempDbRef.removeEventListener(tempListener!!)
             tempListener = null
         }
     }
