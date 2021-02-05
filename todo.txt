@@ -1,0 +1,5 @@
+
+Lägg till github credentials på privata datorn 
+	cygwin
+	pycharm
+	

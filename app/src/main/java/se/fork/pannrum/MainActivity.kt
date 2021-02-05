@@ -1,5 +1,6 @@
 package se.fork.pannrum
 
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -12,6 +13,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import se.fork.pannrum.model.TempRecord
 import se.fork.pannrum.util.FirebaseHelper
 import timber.log.Timber
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private lateinit var smokeTempGauge: Gauge
@@ -73,6 +75,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             Timber.d("listen: Logged in, starting listener")
             startListening(FirebaseHelper.currentUser)
+            playVideo("gs://pannrum-7e210.appspot.com/videos/video.avi", Date())
         }
     }
 
@@ -171,5 +174,12 @@ class MainActivity : AppCompatActivity() {
 
     fun showDatabaseError(error: DatabaseError) {
         Toast.makeText(this, "Databasläsning misslyckades: ${error.toException().localizedMessage}", Toast.LENGTH_LONG).show()
+    }
+
+    fun playVideo(videoUrl: String, videoTime: Date) {
+        video_view.setVideoURI(Uri.parse(videoUrl))
+        video_view.setOnPreparedListener {
+            it.start()
+        }
     }
 }

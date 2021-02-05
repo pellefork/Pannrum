@@ -87,6 +87,38 @@
         />
 
     <View
+        android:id="@+id/pellets_burner"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/off_white"
+        app:layout_constraintStart_toStartOf="@+id/boiler"
+        app:layout_constraintEnd_toEndOf="@+id/boiler"
+        app:layout_constraintBottom_toBottomOf="@+id/boiler"
+        app:layout_constraintDimensionRatio="4:3"
+        android:layout_margin="16dp"/>
+
+    <VideoView
+        android:id="@+id/video_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="@+id/pellets_burner"
+        app:layout_constraintStart_toStartOf="@+id/pellets_burner"
+        app:layout_constraintEnd_toEndOf="@+id/pellets_burner"
+        app:layout_constraintBottom_toBottomOf="@+id/pellets_burner"
+        android:layout_margin="8dp"/>
+
+    <TextView
+        android:id="@+id/video_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@+id/pellets_burner"
+        app:layout_constraintStart_toStartOf="@+id/pellets_burner"
+        app:layout_constraintEnd_toEndOf="@+id/pellets_burner"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/white"
+        tools:text="2021-02-05 22:34:05"/>
+
+    <View
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/boiler"
