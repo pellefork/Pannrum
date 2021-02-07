@@ -1,21 +1,31 @@
 package se.fork.pannrum.util
 
 import android.app.Activity
+import android.net.Uri
+import androidx.core.net.toUri
+import com.google.android.gms.tasks.OnFailureListener
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
+import com.google.firebase.storage.FileDownloadTask
 import com.google.firebase.storage.FirebaseStorage
 import se.fork.pannrum.model.TempRecord
+import se.fork.pannrum.model.VideoRecord
 import timber.log.Timber
+import java.io.File
+import java.lang.Exception
+
 
 object FirebaseHelper {
     val database = FirebaseDatabase.getInstance()
     val tempDbRef = database.getReference("CurrentValues")
     val deviceDbRef = database.getReference("DeviceTokens")
+    val videosDbRef = database.getReference("Videos")
+    val storage = FirebaseStorage.getInstance()
+    val videoRef = storage.getReference("videos")
     var tempListener : ValueEventListener? = null
+    var videoListener : ChildEventListener? = null
     var auth = FirebaseAuth.getInstance()
     val loggedInUser = "lillhagsbacken@gmail.com"
 
@@ -80,5 +90,60 @@ object FirebaseHelper {
             tempDbRef.removeEventListener(tempListener!!)
             tempListener = null
         }
+    }
+
+    fun isListeningForVideos() : Boolean {
+        return videoListener != null
+    }
+
+
+
+    fun listenForVideos(onSuccess:  (VideoRecord?) -> Unit, onError: (DatabaseError) -> Unit ) {
+        stopListeningForVideos()
+        Timber.d("listenForVideos on $videosDbRef")
+        videoListener = videosDbRef.limitToLast(1).addChildEventListener(object : ChildEventListener{
+            override fun onCancelled(databaseError: DatabaseError) {
+                Timber.e(databaseError.toException(),"onCancelled: ${databaseError.details}")
+                onError(databaseError)
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                Timber.e("onChildMoved should never be called")
+            }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                Timber.e("onChildChanged should never be called")
+            }
+
+            override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
+                Timber.d("onDataChange: dataSnapshot.getValue() ${dataSnapshot.getValue()}")
+                val videoRecord = dataSnapshot.getValue(VideoRecord::class.java)
+                Timber.d("listenForVideos: Got $videoRecord")
+                onSuccess(videoRecord)
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+            }
+
+        })
+    }
+
+    fun stopListeningForVideos() {
+        videoListener?.let {
+            videosDbRef.removeEventListener(videoListener!!)
+            videoListener = null
+        }
+    }
+
+    fun downloadVideo(key: String, onSuccess: (File) -> Unit, onError: (Exception) -> Unit) {
+        val localFile: File = File.createTempFile("video", ".avi")
+        videoRef.child(key).child("video.avi").getFile(localFile)
+            .addOnSuccessListener(OnSuccessListener<FileDownloadTask.TaskSnapshot?> {
+                Timber.d("downloadVideo: Success downloading video: $it")
+                onSuccess(localFile)
+            }).addOnFailureListener(OnFailureListener {
+                Timber.e(it, "downloadVideo: Failed to download video")
+                onError(it)
+            })
     }
 }

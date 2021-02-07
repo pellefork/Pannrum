@@ -1,9 +1,9 @@
 package se.fork.pannrum
 
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.core.net.toUri
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseError
@@ -13,6 +13,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 import se.fork.pannrum.model.TempRecord
 import se.fork.pannrum.util.FirebaseHelper
 import timber.log.Timber
+import java.io.File
+import java.text.SimpleDateFormat
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -27,6 +29,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var accTank2BottomTempGauge: Gauge
     private lateinit var accTank3TopTempGauge: Gauge
     private lateinit var accTank3BottomTempGauge: Gauge
+
+    private var lastVideoFile: File? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,11 +113,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun startListening(user: FirebaseUser?) {
-        writeTestRecord()
+        // writeTestRecord()
         Timber.d("startListening: ${user?.email}")
+
         if (FirebaseHelper.isListeningForTemperatures().not()) {
-            Timber.d("startListening: Starting to listen")
-            FirebaseHelper.listenForTemperatures({rec -> updateUI(rec)}, {databaseError -> showDatabaseError(databaseError) })
+            Timber.d("startListening: Starting to listen for temperatures")
+            FirebaseHelper.listenForTemperatures({rec -> updateTempGauges(rec)}, { databaseError -> showDatabaseError(databaseError) })
+        }
+
+        if (FirebaseHelper.isListeningForVideos().not()) {
+            Timber.d("startListening: Starting to listen for videos")
+            // FirebaseHelper.listenForVideos({rec -> playVideo(rec?.)}, { databaseError -> showDatabaseError(databaseError) })
         }
     }
 
@@ -124,12 +134,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun updateUI(tempRec: TempRecord?) {
+    fun updateTempGauges(tempRec: TempRecord?) {
         Timber.d("updateUI: $tempRec")
         tempRec?.let {
             updateGauges(tempRec)
         }
     }
+
 
     fun updateGauges(record: TempRecord) {
         Timber.d("updateGauges: $record")
@@ -176,10 +187,29 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, "Databasläsning misslyckades: ${error.toException().localizedMessage}", Toast.LENGTH_LONG).show()
     }
 
-    fun playVideo(videoUrl: String, videoTime: Date) {
-        video_view.setVideoURI(Uri.parse(videoUrl))
-        video_view.setOnPreparedListener {
-            it.start()
+    fun playVideo(key: String, videoTime: Date) {
+        lastVideoFile?.let {
+            lastVideoFile?.delete()
+        }
+        Timber.d("Starting download")
+        FirebaseHelper.downloadVideo("", { file ->
+            lastVideoFile = file
+            playLocalVideo(Date())
+        }, {
+            Timber.e(it, "Failed to download file")
+        })
+    }
+
+    fun playLocalVideo(videoTime: Date) {
+        lastVideoFile?.let {
+            val time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(videoTime)
+            video_text.text = time
+            Timber.d("playVideo:")
+            video_view.setVideoURI(lastVideoFile!!.toUri())
+            video_view.setOnPreparedListener {
+                Timber.d("playVideo: Prepared!")
+                it.start()
+            }
         }
     }
 }
