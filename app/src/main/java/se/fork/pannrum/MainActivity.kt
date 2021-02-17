@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        clearCacheDir()
         setContentView(R.layout.activity_main)
         initUI()
         handleDeviceToken()
@@ -69,6 +70,13 @@ class MainActivity : AppCompatActivity() {
         if (FirebaseHelper.isLoggedIn()) {
             val rec = TempRecord.createTestRecord()
             FirebaseHelper.writeTempRecord(rec)
+        }
+    }
+
+    private fun clearCacheDir() {
+        cacheDir.listFiles().forEach { file ->
+            Timber.i("clearCacheDir: Deleting $file")
+            file.delete()
         }
     }
 
@@ -201,6 +209,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         lastVideoFile?.let {
+            Timber.d("playVideo: deleting $lastVideoFile")
             lastVideoFile?.delete()
         }
         Timber.d("Starting download")
@@ -214,12 +223,16 @@ class MainActivity : AppCompatActivity() {
 
     fun playLocalVideo(videoTime: Date) {
         lastVideoFile?.let {
+            if (video_view.isPlaying) {
+                video_view.stopPlayback()
+            }
             val time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(videoTime)
             video_text.text = time
             Timber.d("playVideo:")
             video_view.setVideoURI(lastVideoFile!!.toUri())
             video_view.setOnPreparedListener {
                 Timber.d("playVideo: Prepared!")
+                it.isLooping = true
                 it.start()
             }
         }
