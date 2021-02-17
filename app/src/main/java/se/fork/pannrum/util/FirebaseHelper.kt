@@ -116,9 +116,11 @@ object FirebaseHelper {
             }
 
             override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
-                Timber.d("onDataChange: dataSnapshot.getValue() ${dataSnapshot.getValue()}")
-                val videoRecord = dataSnapshot.getValue(VideoRecord::class.java)
-                Timber.d("listenForVideos: Got $videoRecord")
+                Timber.d("listenForVideos 0: ${dataSnapshot.value}")
+                var videoRecord = dataSnapshot.getValue(VideoRecord::class.java)
+                Timber.d("listenForVideos 1: Got $videoRecord")
+                videoRecord?.key = dataSnapshot.key
+                Timber.d("listenForVideos 2: Got $videoRecord")
                 onSuccess(videoRecord)
             }
 
@@ -136,8 +138,10 @@ object FirebaseHelper {
     }
 
     fun downloadVideo(key: String, onSuccess: (File) -> Unit, onError: (Exception) -> Unit) {
-        val localFile: File = File.createTempFile("video", ".avi")
-        videoRef.child(key).child("video.avi").getFile(localFile)
+        val localFile: File = File.createTempFile("video", ".mp4")
+        val newVideoRef = videoRef.child(key).child("video.mp4")
+        Timber.d("downloadVideo: newVideoRef = $newVideoRef")
+        newVideoRef.getFile(localFile)
             .addOnSuccessListener(OnSuccessListener<FileDownloadTask.TaskSnapshot?> {
                 Timber.d("downloadVideo: Success downloading video: $it")
                 onSuccess(localFile)

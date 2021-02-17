@@ -11,6 +11,7 @@ import com.google.firebase.iid.FirebaseInstanceId
 import de.nitri.gauge.Gauge
 import kotlinx.android.synthetic.main.activity_main.*
 import se.fork.pannrum.model.TempRecord
+import se.fork.pannrum.model.VideoRecord
 import se.fork.pannrum.util.FirebaseHelper
 import timber.log.Timber
 import java.io.File
@@ -79,7 +80,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             Timber.d("listen: Logged in, starting listener")
             startListening(FirebaseHelper.currentUser)
-            playVideo("gs://pannrum-7e210.appspot.com/videos/video.avi", Date())
+            // playVideo("-MTlOlpl245fiP5zDzEr", Date())
         }
     }
 
@@ -123,8 +124,14 @@ class MainActivity : AppCompatActivity() {
 
         if (FirebaseHelper.isListeningForVideos().not()) {
             Timber.d("startListening: Starting to listen for videos")
-            // FirebaseHelper.listenForVideos({rec -> playVideo(rec?.)}, { databaseError -> showDatabaseError(databaseError) })
+            FirebaseHelper.listenForVideos({rec -> playNewVideo(rec)}, { databaseError -> showDatabaseError(databaseError) })
         }
+    }
+
+    fun playNewVideo(rec: VideoRecord?) {
+        Timber.d("New video! %s", rec)
+        Toast.makeText(this, "New video! " + rec, Toast.LENGTH_SHORT).show()
+        playVideo(rec?.key, rec?.videoRec?.timeCreated)
     }
 
     fun stopListening() {
@@ -187,12 +194,17 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, "Databasläsning misslyckades: ${error.toException().localizedMessage}", Toast.LENGTH_LONG).show()
     }
 
-    fun playVideo(key: String, videoTime: Date) {
+    fun playVideo(key: String?, videoTime: String?) {
+        if (key.isNullOrEmpty()) {
+            Toast.makeText(this, "Null video key", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         lastVideoFile?.let {
             lastVideoFile?.delete()
         }
         Timber.d("Starting download")
-        FirebaseHelper.downloadVideo("", { file ->
+        FirebaseHelper.downloadVideo(key, { file ->
             lastVideoFile = file
             playLocalVideo(Date())
         }, {
