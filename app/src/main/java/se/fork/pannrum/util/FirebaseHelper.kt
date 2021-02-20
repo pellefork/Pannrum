@@ -10,16 +10,19 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import com.google.firebase.storage.FileDownloadTask
 import com.google.firebase.storage.FirebaseStorage
+import se.fork.pannrum.model.Command
 import se.fork.pannrum.model.TempRecord
 import se.fork.pannrum.model.VideoRecord
 import timber.log.Timber
 import java.io.File
 import java.lang.Exception
+import java.util.*
 
 
 object FirebaseHelper {
     val database = FirebaseDatabase.getInstance()
     val tempDbRef = database.getReference("CurrentValues")
+    val commandsDbRef = database.getReference("Commands")
     val deviceDbRef = database.getReference("DeviceTokens")
     val videosDbRef = database.getReference("Videos")
     val storage = FirebaseStorage.getInstance()
@@ -96,7 +99,10 @@ object FirebaseHelper {
         return videoListener != null
     }
 
-
+    fun issueCommand(commandStr: String) {
+        val command = Command(Date(), commandStr)
+        commandsDbRef.push().setValue(command)
+    }
 
     fun listenForVideos(onSuccess:  (VideoRecord?) -> Unit, onError: (DatabaseError) -> Unit ) {
         stopListeningForVideos()
