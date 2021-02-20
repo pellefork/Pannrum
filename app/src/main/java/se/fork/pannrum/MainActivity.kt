@@ -2,6 +2,9 @@ package se.fork.pannrum
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MenuInflater
+import android.view.View
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.core.net.toUri
 import com.google.android.gms.tasks.OnCompleteListener
@@ -63,6 +66,8 @@ class MainActivity : AppCompatActivity() {
         accTank2BottomTempGauge = acc_2.findViewById(R.id.bottom_gauge)
         accTank3TopTempGauge = acc_3.findViewById(R.id.top_gauge)
         accTank3BottomTempGauge = acc_3.findViewById(R.id.bottom_gauge)
+
+        menu.setOnClickListener { view -> showHamburgerPopup(view) }
     }
 
     fun writeTestRecord() {
@@ -90,6 +95,25 @@ class MainActivity : AppCompatActivity() {
             startListening(FirebaseHelper.currentUser)
             // playVideo("-MTlOlpl245fiP5zDzEr", Date())
         }
+    }
+
+    private fun showHamburgerPopup(v : View){
+        val popup = PopupMenu(this, v)
+        val inflater: MenuInflater = popup.menuInflater
+        inflater.inflate(R.menu.hamburger, popup.menu)
+        popup.setOnMenuItemClickListener { menuItem ->
+            when(menuItem.itemId){
+                R.id.toggle_temp-> {
+                    Timber.d("toggle_temp")
+                }
+                R.id.toggle_video-> {
+                    Timber.d("toggle_video")
+
+                }
+            }
+            true
+        }
+        popup.show()
     }
 
     private fun handleDeviceToken() {

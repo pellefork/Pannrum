@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Pannrum</string>
+
+    <string name="start_temp">Starta temperaturmätning</string>
+    <string name="stop_temp">Stoppa temperaturmätning</string>
+
+    <string name="start_video">Starta pelletsvideo</string>
+    <string name="stop_video">Stoppa pelletsvideo</string>
 </resources>
