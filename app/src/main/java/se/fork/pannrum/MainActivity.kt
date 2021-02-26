@@ -156,16 +156,6 @@ class MainActivity : AppCompatActivity() {
             Timber.d("startListening: Starting to listen for operation status")
             FirebaseHelper.listenForStatus({rec -> updateControls(rec)}, { databaseError -> showDatabaseError(databaseError) })
         }
-
-        if (FirebaseHelper.isListeningForTemperatures().not()) {
-            Timber.d("startListening: Starting to listen for temperatures")
-            FirebaseHelper.listenForTemperatures({rec -> updateTempGauges(rec)}, { databaseError -> showDatabaseError(databaseError) })
-        }
-
-        if (FirebaseHelper.isListeningForVideos().not()) {
-            Timber.d("startListening: Starting to listen for videos")
-            FirebaseHelper.listenForVideos({rec -> playNewVideo(rec)}, { databaseError -> showDatabaseError(databaseError) })
-        }
     }
 
     fun playNewVideo(rec: VideoRecord?) {
@@ -185,18 +175,56 @@ class MainActivity : AppCompatActivity() {
         status?.let {
             if (it.tempRecording) {
                 thermometer_control.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.green, null))
+                thermometer_control.setOnClickListener {
+                    stopTemp()
+                }
             } else {
                 thermometer_control.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.stone_grey, null))
+                thermometer_control.setOnClickListener {
+                    startTemp()
+                }
             }
 
             if (it.videoRecording) {
                 video_control.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.green, null))
+                video_control.setOnClickListener {
+                    stopVideo()
+                }
             } else {
                 video_control.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.stone_grey, null))
+                video_control.setOnClickListener {
+                    startVideo()
+                }
             }
             thermometer_control.visibility = View.VISIBLE
             video_control.visibility = View.VISIBLE
         }
+    }
+
+    fun startTemp() {
+        if (FirebaseHelper.isListeningForTemperatures().not()) {
+            Timber.d("startListening: Starting to listen for temperatures")
+            FirebaseHelper.listenForTemperatures({rec -> updateTempGauges(rec)}, { databaseError -> showDatabaseError(databaseError) })
+        }
+        FirebaseHelper.issueCommand("temp on")
+    }
+
+    fun stopTemp() {
+        FirebaseHelper.issueCommand("temp off")
+        FirebaseHelper.stopListeningForTemperatures()
+    }
+
+    fun startVideo() {
+        if (FirebaseHelper.isListeningForVideos().not()) {
+            Timber.d("startListening: Starting to listen for videos")
+            FirebaseHelper.listenForVideos({rec -> playNewVideo(rec)}, { databaseError -> showDatabaseError(databaseError) })
+        }
+        FirebaseHelper.issueCommand("video on")
+    }
+
+    fun stopVideo() {
+        FirebaseHelper.issueCommand("video off")
+        FirebaseHelper.stopListeningForVideos()
     }
 
     fun updateTempGauges(tempRec: TempRecord?) {
@@ -205,7 +233,6 @@ class MainActivity : AppCompatActivity() {
             updateGauges(tempRec)
         }
     }
-
 
     fun updateGauges(record: TempRecord) {
         Timber.d("updateGauges: $record")
