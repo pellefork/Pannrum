@@ -1,8 +1,6 @@
 package se.fork.pannrum.util
 
 import android.app.Activity
-import android.net.Uri
-import androidx.core.net.toUri
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
@@ -11,6 +9,7 @@ import com.google.firebase.database.*
 import com.google.firebase.storage.FileDownloadTask
 import com.google.firebase.storage.FirebaseStorage
 import se.fork.pannrum.model.Command
+import se.fork.pannrum.model.OperationStatus
 import se.fork.pannrum.model.TempRecord
 import se.fork.pannrum.model.VideoRecord
 import timber.log.Timber
@@ -27,6 +26,7 @@ object FirebaseHelper {
     val videosDbRef = database.getReference("Videos")
     val storage = FirebaseStorage.getInstance()
     val videoRef = storage.getReference("videos")
+    var statusListener : ValueEventListener? = null
     var tempListener : ValueEventListener? = null
     var videoListener : ChildEventListener? = null
     var auth = FirebaseAuth.getInstance()
@@ -68,6 +68,38 @@ object FirebaseHelper {
     fun writeTempRecord(rec : TempRecord) {
         tempDbRef.child("Temperatures").setValue(rec)
     }
+
+    fun listenForStatus(onSuccess:  (OperationStatus?) -> Unit, onError: (DatabaseError) -> Unit ) {
+        val path = tempDbRef.child("OperationStatus")
+        stopListeningForStatus()
+        Timber.d("listenForStatus on $path")
+        statusListener = path.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                Timber.d("onDataChange: dataSnapshot.getValue() ${dataSnapshot.getValue()}")
+                val status = dataSnapshot.getValue(OperationStatus::class.java)
+                Timber.d("listenForStatus: Got $status")
+                onSuccess(status)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Timber.e(databaseError.toException(),"onCancelled: ${databaseError.details}")
+                onError(databaseError)
+            }
+        })
+    }
+
+    fun stopListeningForStatus() {
+        statusListener?.let {
+            tempDbRef.removeEventListener(statusListener!!)
+            statusListener = null
+        }
+    }
+
+    fun isListeningForStatus() : Boolean {
+        return videoListener != null
+    }
+
+
 
     fun listenForTemperatures(onSuccess:  (TempRecord?) -> Unit, onError: (DatabaseError) -> Unit ) {
         val path = tempDbRef.child("Temperatures")

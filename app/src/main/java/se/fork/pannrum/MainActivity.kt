@@ -1,5 +1,6 @@
 package se.fork.pannrum
 
+import android.content.res.ColorStateList
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuInflater
@@ -13,6 +14,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.iid.FirebaseInstanceId
 import de.nitri.gauge.Gauge
 import kotlinx.android.synthetic.main.activity_main.*
+import se.fork.pannrum.model.OperationStatus
 import se.fork.pannrum.model.TempRecord
 import se.fork.pannrum.model.VideoRecord
 import se.fork.pannrum.util.FirebaseHelper
@@ -150,6 +152,11 @@ class MainActivity : AppCompatActivity() {
         // writeTestRecord()
         Timber.d("startListening: ${user?.email}")
 
+        if (FirebaseHelper.isListeningForStatus().not()) {
+            Timber.d("startListening: Starting to listen for operation status")
+            FirebaseHelper.listenForStatus({rec -> updateControls(rec)}, { databaseError -> showDatabaseError(databaseError) })
+        }
+
         if (FirebaseHelper.isListeningForTemperatures().not()) {
             Timber.d("startListening: Starting to listen for temperatures")
             FirebaseHelper.listenForTemperatures({rec -> updateTempGauges(rec)}, { databaseError -> showDatabaseError(databaseError) })
@@ -171,6 +178,24 @@ class MainActivity : AppCompatActivity() {
         if (FirebaseHelper.isListeningForTemperatures()) {
             Timber.d("stopListening: Listening - stopping")
             FirebaseHelper.stopListeningForTemperatures()
+        }
+    }
+
+    fun updateControls(status: OperationStatus?) {
+        status?.let {
+            if (it.tempRecording) {
+                thermometer_control.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.green, null))
+            } else {
+                thermometer_control.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.stone_grey, null))
+            }
+
+            if (it.videoRecording) {
+                video_control.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.green, null))
+            } else {
+                video_control.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.stone_grey, null))
+            }
+            thermometer_control.visibility = View.VISIBLE
+            video_control.visibility = View.VISIBLE
         }
     }
 

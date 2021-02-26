@@ -282,6 +282,7 @@
         app:layout_constraintEnd_toEndOf="@id/guide_pipe"
         android:layout_margin="32dp"
         app:tint="@color/white"
+        android:visibility="gone"
         android:src="@drawable/ic_camera"
         />
 
@@ -294,6 +295,7 @@
         app:layout_constraintStart_toStartOf="@id/guide_pipe"
         android:layout_margin="32dp"
         app:tint="@color/white"
+        android:visibility="gone"
         android:src="@drawable/ic_thermometer"
         />
 
