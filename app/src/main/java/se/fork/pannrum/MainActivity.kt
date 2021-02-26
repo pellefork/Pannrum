@@ -105,10 +105,11 @@ class MainActivity : AppCompatActivity() {
             when(menuItem.itemId){
                 R.id.toggle_temp-> {
                     Timber.d("toggle_temp")
+                    FirebaseHelper.issueCommand("temp on")
                 }
                 R.id.toggle_video-> {
                     Timber.d("toggle_video")
-
+                    FirebaseHelper.issueCommand("video on")
                 }
             }
             true
